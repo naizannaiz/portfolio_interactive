@@ -12,8 +12,6 @@ interface KeywordPromptProps {
 
 const KeywordPrompt = ({ 
   keyword, 
-  prompt, 
-  response, 
   onClick, 
   isActive = false,
   className = '' 

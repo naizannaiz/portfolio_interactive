@@ -1,17 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ExternalLink, Github } from 'lucide-react';
 import ChatGPTInterface from './ChatGPTInterface';
 import KeywordPrompt from './KeywordPrompt';
 
 const Projects = () => {
-  const ref = useRef(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [activePrompt, setActivePrompt] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
   const chatKey = useRef(0);
-  const autoCloseTimeout = useRef<NodeJS.Timeout | null>(null);
+  const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const keywords = [
     {

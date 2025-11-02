@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, Linkedin, Instagram, Mail, ArrowDown, Code } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail, Code } from 'lucide-react';
 import ChatGPTInterface from './ChatGPTInterface';
 import KeywordPrompt from './KeywordPrompt';
 import GitHubIDCard from './GitHubIDCard';
@@ -10,7 +10,7 @@ const Hero = () => {
   const [showChat, setShowChat] = useState(false);
   const [showIDCard, setShowIDCard] = useState(false);
   const chatKey = useRef(0);
-  const autoCloseTimeout = useRef<NodeJS.Timeout | null>(null);
+  const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   const keywords = [

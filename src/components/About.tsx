@@ -1,16 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import ChatGPTInterface from './ChatGPTInterface';
 import KeywordPrompt from './KeywordPrompt';
 
 const About = () => {
-  const ref = useRef(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [activePrompt, setActivePrompt] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
   const chatKey = useRef(0);
-  const autoCloseTimeout = useRef<NodeJS.Timeout | null>(null);
+  const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const keywords = [
     {
@@ -125,13 +123,7 @@ I'm motivated by curiosity and the desire to build things that matter. I enjoy t
 
   return (
     <section 
-      ref={(node) => {
-        if (node) {
-          sectionRef.current = node;
-          if (typeof ref === 'function') ref(node);
-          else if (ref) ref.current = node;
-        }
-      }}
+      ref={sectionRef}
       id="about" 
       className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900"
     >
