@@ -1,18 +1,141 @@
-import { GraduationCap, Heart, Target } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import ChatGPTInterface from './ChatGPTInterface';
+import KeywordPrompt from './KeywordPrompt';
 
 const About = () => {
   const ref = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [activePrompt, setActivePrompt] = useState<string | null>(null);
+  const [showChat, setShowChat] = useState(false);
+  const chatKey = useRef(0);
+  const autoCloseTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const keywords = [
+    {
+      keyword: 'Education',
+      prompt: 'Tell me about Mohamed Naizan\'s education background',
+      response: `### Education Background
+
+**Bachelor of Technology - Artificial Intelligence**
+• Institution: Jyothi Engineering College, Cheruthuruthy
+• Period: Aug 2023 - Jul 2027
+• Currently pursuing studies in AI, machine learning, and intelligent systems
+
+**Higher Secondary Education**
+• Institution: KPSMM VHSS Varode
+• Period: Nov 2021 - May 2023
+• Grade: 84.25%
+
+**Secondary Education**
+• Institution: St. Raphael's Cathedral School
+• Period: Jun 2010 - Mar 2020
+• Grade: 79.8%
+
+I'm currently in my undergraduate program, focusing on building a strong foundation in artificial intelligence and related technologies.`
+    },
+    {
+      keyword: 'About Me',
+      prompt: 'Tell me about Mohamed Naizan as a person',
+      response: `### About Mohamed Naizan
+
+I'm an AI Engineering student who enjoys solving problems and working with teams. I'm currently learning about machine learning, data science, and building web applications.
+
+**What I'm working on:**
+• Building AI and machine learning projects
+• Learning data science and analysis
+• Developing web applications
+• Exploring new technologies
+
+**My approach:**
+I believe in learning by doing, so I spend time on projects and exploring new technologies. I enjoy the process of building things and seeing them come to life.`
+    },
+    {
+      keyword: 'Interests',
+      prompt: 'What are Mohamed Naizan\'s interests and goals?',
+      response: `### Interests and Goals
+
+**Current Focus:**
+• Artificial Intelligence and Machine Learning
+• Data Science and Analytics
+• Web Development
+• Building practical solutions
+
+**Learning Goals:**
+• Deepen understanding of neural networks and deep learning
+• Explore cloud computing and deployment
+• Improve software engineering practices
+• Contribute to open-source projects
+
+**What drives me:**
+I'm motivated by curiosity and the desire to build things that matter. I enjoy tackling new challenges and learning from each project I work on.`
+    }
+  ];
+
+  const handleKeywordClick = (keywordData: typeof keywords[0]) => {
+    // Clear any existing timeout
+    if (autoCloseTimeout.current) {
+      clearTimeout(autoCloseTimeout.current);
+    }
+    
+    setShowChat(false);
+    chatKey.current += 1;
+    setTimeout(() => {
+      setActivePrompt(keywordData.prompt);
+      setShowChat(true);
+    }, 100);
+  };
+
+  // Auto-close chat when user scrolls away from section
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current || !showChat) return;
+      
+      const rect = sectionRef.current.getBoundingClientRect();
+      const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+      
+      if (!isInView) {
+        if (autoCloseTimeout.current) {
+          clearTimeout(autoCloseTimeout.current);
+        }
+        
+        autoCloseTimeout.current = setTimeout(() => {
+          setShowChat(false);
+          setActivePrompt(null);
+        }, 5000);
+      } else {
+        if (autoCloseTimeout.current) {
+          clearTimeout(autoCloseTimeout.current);
+          autoCloseTimeout.current = null;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (autoCloseTimeout.current) {
+        clearTimeout(autoCloseTimeout.current);
+      }
+    };
+  }, [showChat]);
 
   return (
     <section 
+      ref={(node) => {
+        if (node) {
+          sectionRef.current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        }
+      }}
       id="about" 
-      ref={ref}
       className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900"
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.h2 
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -23,104 +146,60 @@ const About = () => {
           About Me
         </motion.h2>
 
-        <div className="space-y-8">
-          {/* Intro */}
+        {/* Keywords */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <p className="text-center text-gray-400 mb-6 text-sm">
+            Click a keyword to learn more:
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {keywords.map((keywordData, index) => (
+              <KeywordPrompt
+                key={index}
+                keyword={keywordData.keyword}
+                prompt={keywordData.prompt}
+                response={keywordData.response}
+                onClick={() => handleKeywordClick(keywordData)}
+                isActive={activePrompt === keywordData.prompt}
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ChatGPT Interface */}
+        {showChat && activePrompt && (
+          <motion.div
+            key={chatKey.current}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8"
+          >
+            <ChatGPTInterface
+              initialPrompt={activePrompt}
+              response={keywords.find(k => k.prompt === activePrompt)?.response || ''}
+              topic={keywords.find(k => k.prompt === activePrompt)?.keyword || ''}
+            />
+          </motion.div>
+        )}
+
+        {/* Default Content (shows when no keyword selected) */}
+        {!showChat && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-gray-300 leading-relaxed"
+            className="text-center text-gray-400"
           >
-            <p className="mb-4">
-              I'm an AI Engineering student who enjoys solving problems and working with teams. 
-              I'm currently learning about machine learning, data science, and building web applications.
-            </p>
-            <p>
-              I believe in learning by doing, so I spend time on projects and exploring new technologies.
-            </p>
+            <p>Select a keyword above to learn more about me.</p>
           </motion.div>
-
-          {/* What I'm working on */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50"
-          >
-            <div className="flex items-start gap-4 mb-4">
-              <Target className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">What I'm Working On</h3>
-                <ul className="space-y-2 text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <span>Building AI and machine learning projects</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <span>Learning data science and analysis</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <span>Developing web applications</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <span>Exploring new technologies</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Education */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <GraduationCap className="w-6 h-6 text-blue-400" />
-              <h3 className="text-xl font-semibold text-white">Education</h3>
-            </div>
-            
-            <div className="space-y-4">
-              {[
-                {
-                  title: 'Bachelor of Technology - Artificial Intelligence',
-                  institution: 'Jyothi Engineering College, Cheruthuruthy',
-                  period: 'Aug 2023 - Jul 2027',
-                },
-                {
-                  title: 'Higher Secondary',
-                  institution: 'KPSMM VHSS Varode',
-                  period: 'Nov 2021 - May 2023 • 84.25%',
-                },
-                {
-                  title: 'Secondary Education',
-                  institution: "St. Raphael's Cathedral School",
-                  period: 'Jun 2010 - Mar 2020 • 79.8%',
-                },
-              ].map((edu, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50"
-                >
-                  <h4 className="font-semibold text-white mb-1">{edu.title}</h4>
-                  <p className="text-blue-400 text-sm mb-1">{edu.institution}</p>
-                  <p className="text-gray-400 text-sm">{edu.period}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        )}
       </div>
     </section>
   );

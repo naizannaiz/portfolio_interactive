@@ -1,24 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Moon, Sun, Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Navbar = () => {
-  const [darkMode, setDarkMode] = useState(true); // Default to dark for story theme
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const isDark = localStorage.getItem('darkMode');
-    if (isDark !== null) {
-      setDarkMode(isDark === 'true');
-      if (isDark === 'true') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } else {
-      document.documentElement.classList.add('dark');
-    }
+    // Always use dark mode
+    document.documentElement.classList.add('dark');
   }, []);
 
   useEffect(() => {
@@ -28,13 +18,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', String(newMode));
-    document.documentElement.classList.toggle('dark');
-  };
 
   const navLinks = [
     { name: 'Home', href: '#home' },
@@ -96,34 +79,10 @@ const Navbar = () => {
                 {link.name}
               </motion.a>
             ))}
-            <motion.button
-              onClick={toggleDarkMode}
-              whileHover={{ scale: 1.1, rotate: 180 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {darkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-blue-400" />
-              )}
-            </motion.button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {darkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-blue-400" />
-              )}
-            </button>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"

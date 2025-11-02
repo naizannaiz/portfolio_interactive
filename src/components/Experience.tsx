@@ -1,61 +1,140 @@
-import { Briefcase, Calendar, MapPin } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import ChatGPTInterface from './ChatGPTInterface';
+import KeywordPrompt from './KeywordPrompt';
 
 const Experience = () => {
   const ref = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [activePrompt, setActivePrompt] = useState<string | null>(null);
+  const [showChat, setShowChat] = useState(false);
+  const chatKey = useRef(0);
+  const autoCloseTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const experiences = [
+  const keywords = [
     {
-      title: 'Data Science Intern',
-      company: 'Genzee Technologies LLP',
-      location: 'Kochi, Kerala, India',
-      duration: 'Jun 2025 - Jul 2025 • 2 months',
-      description: [
-        'Worked with datasets for cleaning and preprocessing',
-        'Performed exploratory data analysis using Pandas and visualization tools',
-        'Implemented basic ML models like Linear Regression and Decision Trees',
-        'Evaluated models using accuracy, precision, and recall metrics',
-        'Applied predictive modeling to solve practical problems',
-      ],
-      skills: ['Python', 'Pandas', 'Data Analysis', 'Machine Learning', 'Statistical Analysis'],
+      keyword: 'Data Science Intern',
+      prompt: 'Tell me about Mohamed Naizan\'s Data Science internship at Genzee Technologies',
+      response: `### Data Science Intern - Genzee Technologies LLP
+
+**Duration:** Jun 2025 - Jul 2025 (2 months)  
+**Location:** Kochi, Kerala, India
+
+**What I did:**
+• Worked with datasets for cleaning and preprocessing structured and unstructured data
+• Performed exploratory data analysis using Pandas, Matplotlib, and Seaborn
+• Implemented basic ML models like Linear Regression, Decision Trees, and K-Means Clustering
+• Evaluated models using accuracy, precision, recall, and confusion matrix metrics
+• Applied predictive modeling to solve practical business problems
+
+**Skills used:**
+Python, Pandas, Data Analysis, Machine Learning, Statistical Analysis, Data Modeling
+
+This internship gave me hands-on experience with real-world data science workflows and model deployment.`
     },
     {
-      title: 'Python Developer',
-      company: 'PACE LAB',
-      location: 'Kochi, Kerala, India',
-      duration: 'Jul 2024 • 1 month',
-      description: [
-        'Learned fundamentals of AI and Python programming',
-        'Explored data science libraries: NumPy, Pandas, Matplotlib',
-        'Practiced machine learning with scikit-learn',
-        'Built a mini project involving dataset handling',
-      ],
-      skills: ['Python', 'NumPy', 'Pandas', 'Machine Learning', 'scikit-learn'],
+      keyword: 'Python Developer',
+      prompt: 'Tell me about Mohamed Naizan\'s Python Developer role at PACE LAB',
+      response: `### Python Developer - PACE LAB
+
+**Duration:** Jul 2024 (1 month)  
+**Location:** Kochi, Kerala, India
+
+**What I learned:**
+• Fundamentals of AI and Python programming through hands-on practice
+• Data science libraries: NumPy, Pandas, Matplotlib
+• Machine learning basics using scikit-learn (classification, regression, model evaluation)
+• Conceptual understanding of neural networks and AI workflow
+• Built a mini project involving dataset handling and model building
+
+**Skills used:**
+Python, NumPy, Pandas, Machine Learning, scikit-learn
+
+This was a great introduction to practical AI development and helped me build a strong foundation in machine learning.`
     },
     {
-      title: 'Intern',
-      company: 'Tata Technologies',
-      location: 'Thrissur, Kerala, India',
-      duration: 'Jan 2024 • 1 month',
-      description: [
-        'Gained exposure to industrial automation and robotics',
-        'Explored CNC robot systems and robotic arms',
-        'Practiced 3D modeling with Fusion 360',
-        'Used 3D printer to create prototypes',
-      ],
-      skills: ['3D Modeling', 'Fusion 360', 'Robotics', '3D Printing'],
-    },
+      keyword: 'Tata Technologies',
+      prompt: 'Tell me about Mohamed Naizan\'s internship at Tata Technologies',
+      response: `### Intern - Tata Technologies
+
+**Duration:** Jan 2024 (1 month)  
+**Location:** Thrissur, Kerala, India
+
+**What I explored:**
+• Industrial automation and robotics systems
+• CNC robot systems and robotic arms
+• 3D modeling using Fusion 360
+• 3D printing and prototyping
+
+**Skills used:**
+3D Modeling, Fusion 360, Robotics, 3D Printing
+
+This internship exposed me to the industrial side of technology and robotics, which deepened my interest in intelligent systems and practical engineering applications.`
+    }
   ];
+
+  const handleKeywordClick = (keywordData: typeof keywords[0]) => {
+    if (autoCloseTimeout.current) {
+      clearTimeout(autoCloseTimeout.current);
+    }
+    
+    setShowChat(false);
+    chatKey.current += 1;
+    setTimeout(() => {
+      setActivePrompt(keywordData.prompt);
+      setShowChat(true);
+    }, 100);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current || !showChat) return;
+      
+      const rect = sectionRef.current.getBoundingClientRect();
+      const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+      
+      if (!isInView) {
+        if (autoCloseTimeout.current) {
+          clearTimeout(autoCloseTimeout.current);
+        }
+        
+        autoCloseTimeout.current = setTimeout(() => {
+          setShowChat(false);
+          setActivePrompt(null);
+        }, 5000);
+      } else {
+        if (autoCloseTimeout.current) {
+          clearTimeout(autoCloseTimeout.current);
+          autoCloseTimeout.current = null;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (autoCloseTimeout.current) {
+        clearTimeout(autoCloseTimeout.current);
+      }
+    };
+  }, [showChat]);
 
   return (
     <section 
+      ref={(node) => {
+        if (node) {
+          sectionRef.current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        }
+      }}
       id="experience" 
-      ref={ref}
       className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900"
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -66,56 +145,60 @@ const Experience = () => {
           Experience
         </motion.h2>
 
-        <div className="space-y-8">
-          {experiences.map((exp, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50"
-            >
-              <div className="flex items-start gap-4 mb-4">
-                <Briefcase className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-1">{exp.title}</h3>
-                  <p className="text-blue-400 mb-2">{exp.company}</p>
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {exp.duration}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      {exp.location}
-                    </span>
-                  </div>
-                </div>
-              </div>
+        {/* Keywords */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <p className="text-center text-gray-400 mb-6 text-sm">
+            Click an experience to learn more:
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {keywords.map((keywordData, index) => (
+              <KeywordPrompt
+                key={index}
+                keyword={keywordData.keyword}
+                prompt={keywordData.prompt}
+                response={keywordData.response}
+                onClick={() => handleKeywordClick(keywordData)}
+                isActive={activePrompt === keywordData.prompt}
+              />
+            ))}
+          </div>
+        </motion.div>
 
-              <ul className="space-y-2 mb-4 text-gray-300">
-                {exp.description.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+        {/* ChatGPT Interface */}
+        {showChat && activePrompt && (
+          <motion.div
+            key={chatKey.current}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8"
+          >
+            <ChatGPTInterface
+              initialPrompt={activePrompt}
+              response={keywords.find(k => k.prompt === activePrompt)?.response || ''}
+              topic={keywords.find(k => k.prompt === activePrompt)?.keyword || ''}
+            />
+          </motion.div>
+        )}
 
-              <div className="flex flex-wrap gap-2">
-                {exp.skills.map((skill, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-sm"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Default Content */}
+        {!showChat && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center text-gray-400"
+          >
+            <p>Select an experience above to learn more.</p>
+          </motion.div>
+        )}
       </div>
     </section>
   );
