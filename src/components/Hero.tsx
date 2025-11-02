@@ -162,10 +162,10 @@ Feel free to reach out if you'd like to collaborate on a project or just want to
       id="home"
       className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 px-4 sm:px-6 lg:px-8 py-20"
     >
-      <div className={`max-w-7xl mx-auto w-full ${showIDCard ? 'flex' : ''}`}>
+      <div className={`max-w-7xl mx-auto w-full ${showIDCard ? 'flex flex-col md:flex-row' : ''}`}>
         {/* Left Section - Profile, Button, Keywords, Chat */}
         <motion.div
-          className={`mb-12 relative flex flex-col items-center justify-center ${showIDCard ? 'flex-1' : 'w-full'}`}
+          className={`mb-12 relative flex flex-col items-center justify-center ${showIDCard ? 'w-full md:flex-1 hidden md:flex' : 'w-full'}`}
           layout
           transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
         >
@@ -197,27 +197,27 @@ Feel free to reach out if you'd like to collaborate on a project or just want to
             </div>
           )}
 
-          {/* Name and Title - stable position */}
+          {/* Name and Title - Mobile responsive */}
           <div className="text-center w-full mb-8">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 whitespace-nowrap">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                 Mohamed Naizan
               </span>
             </h1>
-            <h2 className="text-xl sm:text-2xl text-gray-300 mb-8 whitespace-nowrap">
+            <h2 className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8">
               AI Engineering Student
             </h2>
           </div>
 
-          {/* Show Commitments Button */}
+          {/* Show Commitments Button - Mobile optimized */}
           {!showIDCard && (
             <div className="mb-8 flex justify-center">
               <button
                 onClick={handleShowCommitments}
-                className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg flex items-center gap-2"
+                className="px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 active:scale-95 text-white rounded-lg text-sm sm:text-base font-semibold transition-all duration-300 hover:scale-105 shadow-lg flex items-center gap-2"
               >
-                <Code className="w-5 h-5" />
-                Show Commitments
+                <Code className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="whitespace-nowrap">Show Commitments</span>
               </button>
             </div>
           )}
@@ -301,20 +301,20 @@ Feel free to reach out if you'd like to collaborate on a project or just want to
           </AnimatePresence>
         </motion.div>
 
-        {/* GitHub ID Card Component - Right Center */}
+        {/* GitHub ID Card Component - Mobile optimized */}
         <AnimatePresence>
           {showIDCard && (
             <>
-              {/* Invisible clickable overlay - closes on click outside */}
+              {/* Backdrop overlay - closes on click outside */}
               <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowIDCard(false)}
-                className="fixed inset-0 z-40"
+                className="fixed inset-0 z-40 bg-black/50 md:bg-transparent"
               />
-              {/* ID Card */}
-              <div className="flex-1 flex items-center justify-center relative z-50" onClick={(e) => e.stopPropagation()}>
+              {/* ID Card - Full width on mobile, centered on desktop */}
+              <div className="w-full md:flex-1 flex items-center justify-center relative z-50 px-4 py-8 md:px-0 md:py-0" onClick={(e) => e.stopPropagation()}>
                 <GitHubIDCard onClose={() => setShowIDCard(false)} />
               </div>
             </>

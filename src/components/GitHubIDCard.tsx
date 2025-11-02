@@ -57,22 +57,27 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
-      className="relative z-50"
+      className="relative z-50 w-full max-w-sm sm:max-w-md md:w-80 mx-auto"
     >
-      <div className="relative w-80">
-        {/* Close Button */}
+      <div className="relative w-full">
+        {/* Close Button - Mobile optimized */}
         <button
           onClick={onClose}
-          className="absolute -top-10 right-0 z-30 p-2 bg-gray-900/80 hover:bg-gray-700 rounded-full transition-colors"
+          className="absolute -top-10 sm:-top-10 right-0 z-30 p-2 sm:p-2.5 bg-gray-900/90 hover:bg-gray-700 rounded-full transition-colors shadow-lg"
+          aria-label="Close ID card"
         >
-          <X className="w-4 h-4 text-gray-300" />
+          <X className="w-5 h-5 sm:w-4 sm:h-4 text-gray-300" />
         </button>
 
-        {/* ID Card Container with 3D Flip */}
-        <div className="relative h-[500px] perspective-1000">
+        {/* ID Card Container with 3D Flip - Mobile responsive */}
+        <div className="relative h-[450px] sm:h-[480px] md:h-[500px] perspective-1000">
           <motion.div
-            className="relative w-full h-full preserve-3d cursor-pointer"
+            className="relative w-full h-full preserve-3d cursor-pointer touch-none"
             onClick={() => setIsFlipped(!isFlipped)}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              setIsFlipped(!isFlipped);
+            }}
             animate={{ 
               rotateY: isFlipped ? 180 : 0,
               y: [0, -5, 0],
@@ -91,6 +96,7 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
               WebkitTransformStyle: 'preserve-3d',
             }}
             whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             {/* Front of ID Card */}
             <motion.div
@@ -101,27 +107,27 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
               }}
             >
               <div className="h-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border-2 border-gray-700 shadow-2xl overflow-hidden">
-                {/* ID Card Header */}
-                <div className="bg-gray-700/50 px-6 py-4 border-b border-gray-600">
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                {/* ID Card Header - Mobile optimized */}
+                <div className="bg-gray-700/50 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-600">
+                  <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    <div className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-semibold">
                       Developer ID
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">MN</span>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                      <span className="text-white text-[10px] sm:text-xs font-bold">MN</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Profile Photo Section */}
-                <div className="px-6 pt-6 pb-24">
-                  <div className="flex justify-center mb-6">
+                {/* Profile Photo Section - Mobile optimized */}
+                <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-20 sm:pb-24">
+                  <div className="flex justify-center mb-4 sm:mb-6">
                     <motion.div 
                       layoutId="profile-image"
-                      className="rounded-lg overflow-hidden border-4 border-gray-600 shadow-xl bg-gray-700"
+                      className="rounded-lg overflow-hidden border-2 sm:border-4 border-gray-600 shadow-xl bg-gray-700"
                       style={{ 
-                        width: '128px',
-                        height: '128px',
+                        width: '100px',
+                        height: '100px',
                         aspectRatio: '1 / 1',
                       }}
                       transition={{ 
@@ -141,61 +147,64 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
                     </motion.div>
                   </div>
 
-                  {/* Name Section */}
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-white mb-1">
+                  {/* Name Section - Mobile optimized */}
+                  <div className="text-center mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
                       Mohamed Naizan
                     </h2>
-                    <p className="text-sm text-gray-400 mb-2">AI Engineering Student</p>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-700 rounded-full">
-                      <span className="text-xs text-gray-300">Age: {age}</span>
+                    <p className="text-xs sm:text-sm text-gray-400 mb-2">AI Engineering Student</p>
+                    <div className="inline-flex items-center gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 bg-gray-700 rounded-full">
+                      <span className="text-[10px] sm:text-xs text-gray-300">Age: {age}</span>
                     </div>
                   </div>
 
-                  {/* Profile Buttons - Icons Only */}
-                  <div className="flex items-center justify-center gap-4 mb-6">
+                  {/* Profile Buttons - Mobile optimized */}
+                  <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
                     <a
                       href="https://github.com/naizannaiz"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors group"
+                      className="p-2.5 sm:p-3 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors group active:scale-95"
                       aria-label="GitHub"
                     >
-                      <Github className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                      <Github className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-white" />
                     </a>
                     <a
                       href="https://www.linkedin.com/in/mohamednaizan/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-gray-700 hover:bg-blue-600 transition-colors group"
+                      className="p-2.5 sm:p-3 rounded-full bg-gray-700 hover:bg-blue-600 transition-colors group active:scale-95"
                       aria-label="LinkedIn"
                     >
-                      <Linkedin className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                      <Linkedin className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-white" />
                     </a>
                     <a
                       href="https://www.instagram.com/naizz.af/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-gray-700 hover:bg-pink-600 transition-colors group"
+                      className="p-2.5 sm:p-3 rounded-full bg-gray-700 hover:bg-pink-600 transition-colors group active:scale-95"
                       aria-label="Instagram"
                     >
-                      <Instagram className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                      <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-white" />
                     </a>
                     <a
                       href="mailto:naizan9846@gmail.com"
-                      className="p-3 rounded-full bg-gray-700 hover:bg-red-600 transition-colors group"
+                      className="p-2.5 sm:p-3 rounded-full bg-gray-700 hover:bg-red-600 transition-colors group active:scale-95"
                       aria-label="Email"
                     >
-                      <Mail className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                      <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-white" />
                     </a>
                   </div>
                 </div>
 
-                {/* ID Card Footer */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gray-700/30 px-6 py-4 border-t border-gray-600">
-                  <div className="text-xs text-center space-y-1.5">
+                {/* ID Card Footer - Mobile optimized */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gray-700/30 px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-600">
+                  <div className="text-[10px] sm:text-xs text-center space-y-1 sm:space-y-1.5">
                     <div className="text-gray-300 font-medium italic">i code with vibe</div>
                     <div className="text-gray-500">Kerala, India</div>
+                    <div className="text-gray-600 text-[9px] sm:text-[10px] pt-1 sm:hidden">
+                      Tap to flip
+                    </div>
                   </div>
                 </div>
               </div>
@@ -211,40 +220,40 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
               }}
             >
               <div className="h-full bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 border-gray-700 shadow-2xl overflow-hidden">
-                {/* Back Header */}
-                <div className="bg-gray-800/50 px-6 py-4 border-b border-gray-700">
+                {/* Back Header - Mobile optimized */}
+                <div className="bg-gray-800/50 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-700">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Github className="w-5 h-5 text-gray-300" />
-                      <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Github className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" />
+                      <span className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-semibold">
                         Recent Commitments
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500">Last 6 months</div>
+                    <div className="text-[10px] sm:text-xs text-gray-500">Last 6 months</div>
                   </div>
                 </div>
 
-                {/* Commit Graph */}
-                <div className="px-6 py-6 h-full flex flex-col">
-                  {/* Legend */}
-                  <div className="mb-4 flex items-center justify-center gap-2 text-xs">
+                {/* Commit Graph - Mobile optimized */}
+                <div className="px-3 sm:px-6 py-4 sm:py-6 h-full flex flex-col">
+                  {/* Legend - Mobile optimized */}
+                  <div className="mb-3 sm:mb-4 flex items-center justify-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                     <span className="text-gray-500">Less</span>
                     <div className="flex gap-0.5">
-                      <div className="w-2.5 h-2.5 rounded-sm bg-gray-900"></div>
-                      <div className="w-2.5 h-2.5 rounded-sm bg-green-900"></div>
-                      <div className="w-2.5 h-2.5 rounded-sm bg-green-700"></div>
-                      <div className="w-2.5 h-2.5 rounded-sm bg-green-500"></div>
-                      <div className="w-2.5 h-2.5 rounded-sm bg-green-400"></div>
+                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-gray-900"></div>
+                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-green-900"></div>
+                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-green-700"></div>
+                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-green-500"></div>
+                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-green-400"></div>
                     </div>
                     <span className="text-gray-500">More</span>
                   </div>
 
-                  {/* GitHub-Style Grid - Compact Version */}
-                  <div className="flex-1 overflow-auto flex items-center justify-center">
-                    <div className="inline-flex gap-1">
+                  {/* GitHub-Style Grid - Mobile optimized */}
+                  <div className="flex-1 overflow-auto flex items-center justify-center min-h-0">
+                    <div className="inline-flex gap-0.5 sm:gap-1">
                       {Object.entries(commitData).map(([month, weeks]) => (
                         <div key={month} className="flex flex-col gap-0.5">
-                          <div className="text-[10px] text-gray-500 mb-1 text-center h-4 flex items-end justify-center font-mono">
+                          <div className="text-[8px] sm:text-[10px] text-gray-500 mb-0.5 sm:mb-1 text-center h-3 sm:h-4 flex items-end justify-center font-mono">
                             {month}
                           </div>
                           {weeks.map((week, weekIdx) => (
@@ -252,7 +261,7 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
                               {week.map((commitCount, dayIdx) => (
                                 <div
                                   key={dayIdx}
-                                  className={`w-2.5 h-2.5 rounded-sm ${getCommitColor(commitCount)} hover:ring-1 hover:ring-blue-400 transition-all cursor-pointer`}
+                                  className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm ${getCommitColor(commitCount)} hover:ring-1 hover:ring-blue-400 transition-all cursor-pointer`}
                                   title={`${commitCount} contributions on ${month} week ${weekIdx + 1}`}
                                 />
                               ))}
@@ -263,20 +272,20 @@ const GitHubIDCard = ({ onClose }: GitHubIDCardProps) => {
                     </div>
                   </div>
 
-                  {/* Stats Footer */}
-                  <div className="mt-4 pt-4 border-t border-gray-800">
-                    <div className="flex justify-around text-xs text-gray-500">
+                  {/* Stats Footer - Mobile optimized */}
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-800">
+                    <div className="flex justify-around text-[10px] sm:text-xs text-gray-500">
                       <div className="text-center">
                         <div className="text-white font-semibold">
                           {Object.values(commitData).flat().flat().reduce((a, b) => a + b, 0)}
                         </div>
-                        <div>Total Commits</div>
+                        <div className="text-[9px] sm:text-xs">Total Commits</div>
                       </div>
                       <div className="text-center">
                         <div className="text-white font-semibold">
                           {Object.values(commitData).flat().flat().filter(c => c > 0).length}
                         </div>
-                        <div>Active Days</div>
+                        <div className="text-[9px] sm:text-xs">Active Days</div>
                       </div>
                     </div>
                   </div>
